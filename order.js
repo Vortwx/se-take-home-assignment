@@ -1,4 +1,4 @@
-class order {
+class Order {
     // introduce mechanism for prevent conflict
     // maybe order connect to bot but bot dont hold record of order done?
 
@@ -18,3 +18,5 @@ class order {
         this.complete = true
     }
 }
+
+module.exports = Order;
