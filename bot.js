@@ -1,3 +1,5 @@
+const constants = require('./constants');
+
 class Bot {
     constructor(order = undefined){
         this.order = order
@@ -14,7 +16,7 @@ class Bot {
                 this.order.isCompleted(); // Process order
                 this.order = undefined;   // Remove connected order after
                 resolve();                // Resolve the promise after completion
-            }, TIME_PROCESSED);
+            }, constants.TIME_PROCESSED);
         });
     }
 

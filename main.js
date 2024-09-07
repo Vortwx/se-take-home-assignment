@@ -83,7 +83,7 @@ class System {
         console.log("#5Bots:",this.botList);
         console.log("#5Pending:",this.pendingOrders);
         console.log("#5Completed:",this.completedOrders);
-        setTimeout(this.removeBot(),50);
+        setTimeout(() => this.removeBot(),50);
         console.log("#6Bots:",this.botList);
         console.log("#6Pending:",this.pendingOrders);
         console.log("#6Completed:",this.completedOrders);
