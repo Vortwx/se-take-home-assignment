@@ -30,4 +30,4 @@ async function botProcess(order, bot, completed){
 
 }
 
-export {botProcess}
+export {botProcess, createOrder}

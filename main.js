@@ -1,7 +1,7 @@
 import { Order } from './order.js';
 import { Bot } from './bot.js';        
 import { VIP, NORMAL } from './constants.js';
-import { botProcess } from './util.js';
+import { botProcess, createOrder } from './util.js';
 
 
 /**
@@ -19,15 +19,13 @@ class System {
         this.orderNo = 1
     }
 
-
-
     updateOrderNo(){
         this.orderNo += 1
     }
 
     async addBot(){
         let orderToProcess = this.pendingOrders.shift() //need to check if it is undefined ?? maybe no need
-        createOrder('.service-card.card-left', this.pendingOrders);
+        //createOrder('.service-card.card-left', this.pendingOrders);
         let len = this.botList.push(new Bot())
         await botProcess(orderToProcess, this.botList[len-1], this.completedOrders)
     }
@@ -40,14 +38,14 @@ class System {
         if(!orderToReturn) return;
 
         this.pendingOrders.unshift(orderToReturn)
-        createOrder('.service-card.card-left', this.pendingOrders);
+        //createOrder('.service-card.card-left', this.pendingOrders);
     }
 
     newNormalOrder(){
         let normal = new Order(NORMAL,this.orderNo)
         this.updateOrderNo()
         this.pendingOrders.push(normal)
-        createOrder('.service-card.card-left', this.pendingOrders);
+        //createOrder('.service-card.card-left', this.pendingOrders);
     }
     
     newVIPOrder(){
@@ -57,7 +55,7 @@ class System {
         for(var i = 0; i < this.pendingOrders.length; i++){
             if (this.pendingOrders[i].priority < vip.priority){
                 this.pendingOrders.splice(i,0,vip)
-                createOrder('.service-card.card-left', this.pendingOrders);
+                //createOrder('.service-card.card-left', this.pendingOrders);
                 break
             }
         }
@@ -107,6 +105,9 @@ class System {
 
     async tick(){
         // check if bot can get assigned to a new job
+        createOrder('.service-card.card-left', this.pendingOrders);
+        createOrder('.service-card.card-right', this.completedOrders);
+
         for(let i = (this.botList.length-1); i >= 0; i--){
             if(this.botList[i].isIdle()){
                 //check if there is a job available
@@ -116,6 +117,9 @@ class System {
                 await botProcess(orderToProcess,this.botList[i],this.completedOrders); // should I put await here
             }
         }
+
+        console.log("Pending:",this.pendingOrders)
+        console.log("Completed:",this.completedOrders)
     }
 }
 
