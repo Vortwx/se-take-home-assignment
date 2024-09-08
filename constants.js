@@ -1,11 +1,7 @@
-const VIP = 1
-const NORMAL = 0
-const TIME_PROCESSED = 1000 //ms
+export const VIP = 1
+export const NORMAL = 0
+export const TIME_PROCESSED = 1000 //ms
 
-module.exports = {
-    VIP,
-    NORMAL,
-    TIME_PROCESSED
-}
+
 
 

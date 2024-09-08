@@ -17,6 +17,10 @@ class Order {
         this.pending = false
         this.complete = true
     }
+
+    toString(){
+        return `${this.priority === 1 ? 'VIP ' : 'Normal '}Order #${this.number}`
+    }
 }
 
-module.exports = Order;
+export { Order };

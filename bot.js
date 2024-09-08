@@ -1,4 +1,4 @@
-const constants = require('./constants');
+import { TIME_PROCESSED } from "./constants.js";
 
 class Bot {
     constructor(order = undefined){
@@ -16,15 +16,20 @@ class Bot {
                 this.order.isCompleted(); // Process order
                 this.order = undefined;   // Remove connected order after
                 resolve();                // Resolve the promise after completion
-            }, constants.TIME_PROCESSED);
+            }, TIME_PROCESSED);
         });
     }
 
     cancelOrder(){
         clearTimeout(this.processID)
+        this.processID = undefined
         return this.order
         //check if it is set to completed or not?
     }
+
+    isIdle(){
+        return this.order === undefined
+    }
 }
 
-module.exports = Bot;
+export { Bot };

@@ -1,6 +1,15 @@
-const Order = require('./order');
-const Bot = require('./bot');
-const constants = require('./constants');
+import { Order } from './order.js';
+import { Bot } from './bot.js';        
+import { VIP, NORMAL } from './constants.js';
+import { botProcess } from './util.js';
+
+
+/**
+ * class State
+ * main(){
+ * setInterval(()=>checkUpdate(),500)
+ * }
+ */
 
 class System {
     constructor(){
@@ -10,47 +19,45 @@ class System {
         this.orderNo = 1
     }
 
+
+
     updateOrderNo(){
         this.orderNo += 1
     }
 
     async addBot(){
-        let orderToProcess = this.pendingOrders.pop() //need to check if it is undefined ?? maybe no need
-        let newBot = new Bot()
-        newBot.assignOrder(orderToProcess)
-        this.botList.push(newBot)
-        await newBot.processOrder()
-        //append order into completedOrders afterwards
-        this.completedOrders.unshift(orderToProcess)
-        // check if undefined then null else normal
+        let orderToProcess = this.pendingOrders.shift() //need to check if it is undefined ?? maybe no need
+        createOrder('.service-card.card-left', this.pendingOrders);
+        let len = this.botList.push(new Bot())
+        await botProcess(orderToProcess, this.botList[len-1], this.completedOrders)
     }
 
     removeBot(){
         let removed = this.botList.pop() //remove latest bot added need to check undefined
-        if (removed === undefined){
-            return
-        }
+        if(!removed) return;
+
         let orderToReturn = removed.cancelOrder()
-        if(orderToReturn === undefined){
-            return 
-        }else{
-            this.pendingOrders.unshift(orderToReturn)
-        }
+        if(!orderToReturn) return;
+
+        this.pendingOrders.unshift(orderToReturn)
+        createOrder('.service-card.card-left', this.pendingOrders);
     }
 
     newNormalOrder(){
-        let normal = new Order(constants.NORMAL,this.orderNo)
+        let normal = new Order(NORMAL,this.orderNo)
         this.updateOrderNo()
         this.pendingOrders.push(normal)
+        createOrder('.service-card.card-left', this.pendingOrders);
     }
     
     newVIPOrder(){
-        let vip = new Order(constants.VIP,this.orderNo)
+        let vip = new Order(VIP,this.orderNo)
         this.updateOrderNo()
         //search from start
         for(var i = 0; i < this.pendingOrders.length; i++){
             if (this.pendingOrders[i].priority < vip.priority){
                 this.pendingOrders.splice(i,0,vip)
+                createOrder('.service-card.card-left', this.pendingOrders);
                 break
             }
         }
@@ -58,7 +65,7 @@ class System {
         // start from beginning, if the current index has lower prioity than his then splice(i)
     }
 
-    main(){
+    test(){
         /**
          * Add Bot
          * Minus Bot
@@ -72,6 +79,7 @@ class System {
          */
         this.addBot();
         console.log("#1Bots:",this.botList);
+        console.log("#1Completed:",this.completedOrders);
         this.removeBot();
         console.log("#2Bots:",this.botList);
         this.newNormalOrder();
@@ -92,10 +100,43 @@ class System {
         console.log("#7Pending:",this.pendingOrders);
         console.log("#7Completed:",this.completedOrders);
     }
+
+    main(){
+        setInterval(()=>this.tick(),500)
+    }
+
+    async tick(){
+        // check if bot can get assigned to a new job
+        for(let i = (this.botList.length-1); i >= 0; i--){
+            if(this.botList[i].isIdle()){
+                //check if there is a job available
+                let orderToProcess = this.pendingOrders.shift()
+                if(!orderToProcess) return;
+                createOrder('.service-card.card-left', this.pendingOrders);
+                await botProcess(orderToProcess,this.botList[i],this.completedOrders); // should I put await here
+            }
+        }
+    }
 }
 
 
-sys = new System();
+let sys = new System();
+document.getElementById('normal-order').addEventListener('click', () => {
+    sys.newNormalOrder();
+});
+
+document.getElementById('vip-order').addEventListener('click', () => {
+    sys.newVIPOrder();
+});
+
+document.getElementById('add-bot').addEventListener('click', () => {
+    sys.addBot();
+});
+
+document.getElementById('remove-bot').addEventListener('click', () => {
+    sys.removeBot();
+});
+
 sys.main();
 
 //// Function to Show

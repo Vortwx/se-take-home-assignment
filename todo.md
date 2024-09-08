@@ -11,3 +11,8 @@
 
 
 First focus on CLI
+
+
+# Edge Case
+- Solve problem that existing bot won't take the remaining orders (Need state to run over for checking)
+- Make the order stacked inside card (v)
