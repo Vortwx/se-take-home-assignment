@@ -24,7 +24,6 @@ class Bot {
         clearTimeout(this.processID)
         this.processID = undefined
         return this.order
-        //check if it is set to completed or not?
     }
 
     isIdle(){

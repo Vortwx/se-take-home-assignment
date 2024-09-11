@@ -2,32 +2,33 @@
 // 1. use the order parameter to assign
 // 2. processOrder()
 // 3. check if the order is undefined
+import {Order} from './order.js'
 
-function createOrder(containerSelector, orders){
-    const container = document.querySelector(containerSelector);
+function updateOrderView(id, orders){
+    let displayList = document.getElementById(id)
 
-    let textContainer = container.querySelector('.card-content');
-    if (textContainer) {
-        textContainer.innerHTML = '';
-    } else {
-        textContainer = document.createElement('div');
-        textContainer.classList.add('card-content');
-        container.appendChild(textContainer);
-    }
+    displayList.innerHTML = orders.map(order =>
+        order.toString()
+      ).join('<br>');
 
-    textContainer.innerHTML = orders.join('<br>');
+    // let textContainer = container.querySelector('.card-content');
+    // if (textContainer) {
+    //     textContainer.innerHTML = '';
+    // } else {
+    //     textContainer = document.createElement('div');
+    //     textContainer.classList.add('card-content');
+    //     container.appendChild(textContainer);
+    // }
+    // textContainer.innerHTML = orders.join('<br>');
 
 }
 
 async function botProcess(order, bot, completed){
-    if(order === undefined){
-        return
-    }
+    if(!order) return;
     bot.assignOrder(order)
     await bot.processOrder()
     completed.unshift(order)
-    createOrder('.service-card.card-right', completed);
-
+    updateOrderView('completedOrders', completed)
 }
 
-export {botProcess, createOrder}
+export {botProcess, updateOrderView}
